@@ -1,9 +1,28 @@
-import React from "react";
-import { StyleSheet, Text, View, TextInput, Image } from 'react-native';
-import icon from '../assets/logo.png'
+import {useState} from "react";
+import { StyleSheet, Text, View, TextInput, Image, Alert, Pressable } from 'react-native';
+import icon from '../assets/logo.png';
+import {useNavigation} from '@react-navigation/native';
 
 
 function ResetPassword() {
+    const navigation = useNavigation();
+
+    const [email,setEmail] = useState('');
+
+    const reset = () => {
+        if (email !== '') {
+            navigation.navigate("landingPage")
+            Alert.alert('Check Your Emails')
+            console.log("succefully reset")
+        }else{
+            Alert.alert('Enter Email Adress')
+            console.log('Input Empty')
+        }
+    }
+
+    const signIn = () =>{
+        navigation.navigate('Home')
+    }
     return (
         <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
             <View style={{ width: '100%', height: '50%', backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
@@ -23,20 +42,24 @@ function ResetPassword() {
                     <Text style={styles.signIn}>Reset Password</Text>
                     <TextInput
                         style={styles.input}
+                        onChangeText={(text)=>setEmail(text)}
+                        value={email}
                         placeholder="Email Adress" />
-
-                    <Text style={{
-                        backgroundColor: '#E85800',
-                        color: 'white',
-                        textAlign: 'center',
-                        padding: 7,
-                        marginTop: 10,
-                        width: "50%",
-                        alignSelf: 'center',
-                        borderRadius: 5
-                    }}>
-                        Reset
-                    </Text>
+                    <Pressable>
+                        <Text style={{
+                            backgroundColor: '#E85800',
+                            color: 'white',
+                            textAlign: 'center',
+                            padding: 7,
+                            marginTop: 10,
+                            width: "50%",
+                            alignSelf: 'center',
+                            borderRadius: 5
+                        }} onPress={reset} >
+                            Reset
+                        </Text>
+                    </Pressable>
+                    
                 </View>
                 <Text style={{
                     backgroundColor: '#E85800',
@@ -47,7 +70,7 @@ function ResetPassword() {
                     width: "50%",
                     alignSelf: 'center',
                     borderRadius: 5
-                }}>
+                }} onPress={signIn}>
                     Sign In
                 </Text>
 
@@ -69,7 +92,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: "center",
         fontSize: 20,
-        marginTop: 10
+        marginTop: 15
     },
     input: {
         color: 'white',
