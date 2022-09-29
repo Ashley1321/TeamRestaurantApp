@@ -1,14 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Image,Alert, Pressable} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image,Alert, Pressable,TouchableOpacity} from 'react-native';
 import {useState,useEffect} from 'react';
-import image from './assets/logo.PNG';
+import image from './assets/logo.png';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RegisterUser from './pages/Register';
 import ResetPassword from './pages/forgotPassword';
 import {useNavigation} from '@react-navigation/native';
 import {signInWithEmailAndPassword} from 'firebase/auth';
-import {auth} from './config/firebase'
+import {auth} from './config/firebase';
+import Landing from './pages/landingPage';
 
 
 
@@ -22,7 +23,7 @@ function HomeScreen() {
   const login = () => { 
     signInWithEmailAndPassword(auth,email,password).then(()=>{
       if (email !== "" && password !== ""){
-        navigation.navigate("Register");
+        navigation.navigate("Landing");
         Alert.alert("Successfully Logged In")
       }else{
         Alert.alert("Inputs can not be empty")
@@ -68,7 +69,7 @@ function HomeScreen() {
         <Text style={{ color: "white", textAlign: 'center', margin: 10 }} onPress={forgotPassword}>
           Forgot Password?
         </Text>
-        <Pressable>
+        <TouchableOpacity>
           <Text style={{
             backgroundColor: '#E85800',
             color: 'white',
@@ -81,7 +82,7 @@ function HomeScreen() {
           }} onPress={ login }>
             Sign In
           </Text>
-        </Pressable>
+        </TouchableOpacity>
         
       </View>
     </View>
@@ -92,13 +93,16 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Home'>
-        <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
-        <Stack.Screen name="Register" component={RegisterUser} options={{headerShown: false}} />
-        <Stack.Screen name="forgotPassword" component={ResetPassword} options={{headerShown: false}} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator initialRouteName='Home' screenOptions={{
+      headerShown: false,
+    }}>
+    <Stack.Screen name="Landing" component={Landing}/>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Register" component={RegisterUser} />
+      <Stack.Screen name="forgotPassword" component={ResetPassword} />
 
+    </Stack.Navigator>
+  </NavigationContainer>
   );
 }
 
