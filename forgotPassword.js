@@ -1,5 +1,5 @@
 import {useState} from "react";
-import { StyleSheet, Text, View, TextInput, Image, Alert, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image, Alert, TouchableOpacity } from 'react-native';
 import icon from '../assets/logo.png';
 import {useNavigation} from '@react-navigation/native';
 
@@ -11,7 +11,7 @@ function ResetPassword() {
 
     const reset = () => {
         if (email !== '') {
-            navigation.navigate("landingPage")
+            navigation.navigate("Landing")
             Alert.alert('Check Your Emails')
             console.log("succefully reset")
         }else{
@@ -45,7 +45,7 @@ function ResetPassword() {
                         onChangeText={(text)=>setEmail(text)}
                         value={email}
                         placeholder="Email Adress" />
-                    <Pressable>
+                    <TouchableOpacity>
                         <Text style={{
                             backgroundColor: '#E85800',
                             color: 'white',
@@ -58,7 +58,7 @@ function ResetPassword() {
                         }} onPress={reset} >
                             Reset
                         </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                     
                 </View>
                 <Text style={{

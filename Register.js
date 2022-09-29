@@ -1,26 +1,28 @@
-import {useState} from "react";
-import { StyleSheet, Text, View, TextInput, Image, Alert, Pressable } from 'react-native';
+import React,{useState} from "react";
+import { StyleSheet, Text, View, TextInput, Image, Alert, TouchableOpacity,TouchableHighlight } from 'react-native';
 import icon from '../assets/logo.png';
 import {useNavigation} from '@react-navigation/native';
 import{createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../config/firebase'
+import {auth} from '../config/firebase';
+import { Avatar } from "react-native-elements";
 
 
 
 function RegisterUser() {
     const navigation = useNavigation();
 
-    const [firstName,setFirstName] = useState('');
-    const [secondName,setSecondName] = useState('');
-    const [email,setEmail] = useState('');
-    const [contact,setContact] = useState('');
-    const [password,setPassword] = useState('');
-    const [confirmPassword,setconfirmPassword] = useState('');
+    const [firstName,setFirstName] = React.useState('');
+    const [secondName,setSecondName] = React.useState('');
+    const [email,setEmail] = React.useState('');
+    const [contact,setContact] = React.useState('');
+    const [password,setPassword] = React.useState('');
+    const [confirmPassword,setconfirmPassword] = React.useState('');
+    const [pic,setPic] = React.useState('');
 
     const register = () => {
         createUserWithEmailAndPassword(auth,email,password).then(()=>{
             if(password === confirmPassword ){
-                navigation.navigate("Home")
+                navigation.navigate("Landing")
                 Alert.alert("Successfully Logged In")
         }else{
             Alert.alert('Passwords do not match ')
@@ -32,6 +34,7 @@ function RegisterUser() {
         })
 
     }
+
 
     const signIn = () => {
         navigation.navigate("Home")
@@ -76,10 +79,19 @@ function RegisterUser() {
                     secureTextEntry
                     value={confirmPassword}
                     placeholder="Confirm Password" />
+                {/* <TouchableHighlight 
+                    onPress={()=>Alert.alert('pressed')}
+                    underlayColor='transparent'>
+                    <Avatar.Image 
+                    size={250}
+                    source={{uri:'data:image/png;base64,'+pic}} />    
+                </TouchableHighlight> */}
+                    
+                
                 <Text style={{ color: "white", textAlign: 'center', margin: 10 }} onPress={signIn} >
                     Already has Account?
                 </Text>
-                <Pressable>
+                <TouchableOpacity>
                     <Text style={{
                         backgroundColor: '#E85800',
                         color: 'white',
@@ -91,8 +103,10 @@ function RegisterUser() {
                         borderRadius: 5
                     }} onPress={register} >
                         Register
+
                     </Text>
-                </Pressable>
+                </TouchableOpacity>
+      
                
             </View>
         </View>
