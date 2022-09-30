@@ -1,35 +1,68 @@
-import React,{useState} from "react";
-import { StyleSheet, Text, View, TextInput, Image, Alert, TouchableOpacity,TouchableHighlight } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TextInput, Image, Alert, TouchableOpacity, Platform, Button } from 'react-native';
 import icon from '../assets/logo.png';
-import {useNavigation} from '@react-navigation/native';
-import{createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../config/firebase';
-import { Avatar } from "react-native-elements";
+import { useNavigation } from '@react-navigation/native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
+import * as ImagePicker from 'expo-image-picker';
+import user from '../assets/user.png';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../config/firebase'
+
 
 
 
 function RegisterUser() {
     const navigation = useNavigation();
 
-    const [firstName,setFirstName] = React.useState('');
-    const [secondName,setSecondName] = React.useState('');
-    const [email,setEmail] = React.useState('');
-    const [contact,setContact] = React.useState('');
-    const [password,setPassword] = React.useState('');
-    const [confirmPassword,setconfirmPassword] = React.useState('');
-    const [pic,setPic] = React.useState('');
+    const [firstName, setFirstName] = React.useState('');
+    const [secondName, setSecondName] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [contact, setContact] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [confirmPassword, setconfirmPassword] = React.useState('');
+    const [image, setImage] = React.useState();
+    const addUserRef = collection(db, 'User Details')
+
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+        console.log(result);
+
+        if (!result.cancelled) {
+            setImage(result.uri);
+        }
+    }
 
     const register = () => {
-        createUserWithEmailAndPassword(auth,email,password).then(()=>{
-            if(password === confirmPassword ){
+        createUserWithEmailAndPassword(auth, email, password).then(() => {
+            const signUpDetails = {
+                firstName:firstName,
+                secondName:secondName,
+                contact:contact,
+                email:email
+            }
+
+            addDoc(addUserRef,signUpDetails).then(()=>{
+                console.log("available");
+            }).catch((err)=>{
+                console.log(err);
+            })
+
+            if (password === confirmPassword) {
                 navigation.navigate("Landing")
                 Alert.alert("Successfully Logged In")
-        }else{
-            Alert.alert('Passwords do not match ')
-            console.log('Passwords do not match ');
-        }
+            } else {
+                Alert.alert('Passwords do not match ')
+                console.log('Passwords do not match ');
+            }
 
-        }).catch((error)=> {
+        }).catch((error) => {
             console.log(error);
         })
 
@@ -41,53 +74,53 @@ function RegisterUser() {
     }
     return (
         <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
-            <View style={{ width: '100%', height: '35%', backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: '100%', height: '10%', backgroundColor: 'white', alignItems: 'end', justifyContent: 'center' }}>
                 <Image source={icon} style={styles.logo} />
             </View>
 
+            <View style={{ width: '100%', height: '25%', backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }}>
+            <TouchableOpacity onPress={pickImage} style={{marginTop:-60}}>
+                {image ? <Image source={{ uri: image }} style={{ width: 200, height: 200,borderRadius:200 }}/>:
+                 <Image source={user}  style={{width:200,height:200, borderRadius:200}} />
+                }
+            </TouchableOpacity>
+            </View>
             <View style={{ width: '100%', height: "65%", backgroundColor: "#2B2C34", borderTopEndRadius: 21, borderTopStartRadius: 21 }}>
                 <Text style={styles.signIn}>Sign Up</Text>
                 <TextInput
                     style={styles.input}
-                    onChangeText={(text)=>setFirstName(text)}
+                    onChangeText={(text) => setFirstName(text)}
                     value={firstName}
                     placeholder="First Name" />
                 <TextInput
                     style={styles.input}
-                    onChangeText={(text)=>setSecondName(text)}
+                    onChangeText={(text) => setSecondName(text)}
                     value={secondName}
                     placeholder="Second Name" />
                 <TextInput
                     style={styles.input}
-                    onChangeText={(text)=>setEmail(text)}
+                    onChangeText={(text) => setEmail(text)}
                     value={email}
                     placeholder="Email Adress" />
                 <TextInput
                     style={styles.input}
-                    onChangeText={(text)=>setContact(text)}
+                    onChangeText={(text) => setContact(text)}
                     value={contact}
                     placeholder="Phone Number" />
                 <TextInput
                     style={styles.input}
-                    onChangeText={(text)=>setPassword(text)}
+                    onChangeText={(text) => setPassword(text)}
                     secureTextEntry
                     value={password}
                     placeholder="Create Password" />
                 <TextInput
                     style={styles.input}
-                    onChangeText={(text)=>setconfirmPassword(text)}
+                    onChangeText={(text) => setconfirmPassword(text)}
                     secureTextEntry
                     value={confirmPassword}
-                    placeholder="Confirm Password" />
-                {/* <TouchableHighlight 
-                    onPress={()=>Alert.alert('pressed')}
-                    underlayColor='transparent'>
-                    <Avatar.Image 
-                    size={250}
-                    source={{uri:'data:image/png;base64,'+pic}} />    
-                </TouchableHighlight> */}
-                    
-                
+                    placeholder="Confirm Password"
+                />
+
                 <Text style={{ color: "white", textAlign: 'center', margin: 10 }} onPress={signIn} >
                     Already has Account?
                 </Text>
@@ -103,11 +136,11 @@ function RegisterUser() {
                         borderRadius: 5
                     }} onPress={register} >
                         Register
-
                     </Text>
+
                 </TouchableOpacity>
-      
-               
+
+
             </View>
         </View>
     )
@@ -118,8 +151,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     logo: {
-        width: 150,
-        height: 150
+        width: 70,
+        height: 70
     },
     signIn: {
         color: 'white',
@@ -131,7 +164,7 @@ const styles = StyleSheet.create({
         color: 'white',
         borderWidth: 3,
         padding: 10,
-        margin: 3,
+        margin: 2,
         borderBottomColor: 'white',
         borderEndColor: '#2B2C34',
         borderLeftColor: "#2B2C34",
